@@ -1,7 +1,7 @@
 
 const home = (req,res) => {
     res.status(200).send(
-        `<h1>Hello All</h1>`
+        `<h1>Hello All Everyone</h1>`
     )
 }
 
