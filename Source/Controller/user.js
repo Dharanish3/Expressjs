@@ -1,106 +1,135 @@
 import { findIndex } from "./find.js";
+import DB from '../DB/database.js'
+import mongodb , { MongoClient } from 'mongodb'
 
-const users = [
-  {
-    id: 1,
-    name: "Dharanish",
-    email: "dharanishsk9698@gmail.com",
-    mobile: 6382617437,
-    status: 1,
-  },
-  {
-    id: 2,
-    name: "Amar",
-    email: "amar@gmail.com",
-    mobile: 9876543210,
-    status: 2,
-  },
-];
+const client = new MongoClient(DB.DB_URL);  // Connection URL
+
+const dbName = DB.DB_name;// Database Name
+
+
+const users = []
 
 // Get All User
-const user = (req, res) => {
+const user = async (req, res) => {
+  await client.connect();
   try {
-    res.status(200).send(users);
+    const db = await client.db(dbName)
+    const user = await  db.collection('user').find().toArray();
+    res.status(200).send(user);
   } catch (error) {
     res.status(500).send(error);
   }
+  finally {
+    client.close()
+  }
 };
+
 
 
 // Get User by Id
-const userId = (req, res) => {
+const userId = async (req, res) => {
+  await client.connect();
   try {
-    let { id } = req.params;
-    let index = findIndex(users, id);
-    if (index !== -1) {
-      res.status(200).send({ message: "Successfully", user: users[index] });
-    } else {
-      res.status(400).send({
-        message: "Invalid User ID",
-      });
+    const db = await client.db(dbName)
+    const user = await  db.collection('user').findOne({_id:new mongodb.ObjectId(req.params.id) });
+    if(user) {
+      
+      res.status(200).send({ message: "Successfully", user : user  });
     }
+   
+      
+    
   } catch (error) {
     res.status(500).send(error);
   }
+  finally {
+    client.close()
+  }
 };
+
+
 
 
 // User Create
-const userAdd = (req, res) => {
+const userAdd = async (req, res) => {
+  await client.connect();
   try {
-    console.log(req.body);
-    let id = users.length ? users[users.length - 1].id + 1 : 1;
-    req.body.id = id;
+    const db = await client.db(dbName)
+    const user =await  db.collection('user').findOne({email:req.body.email});
+    if(!user){
+      const create = await db.collection('user').insertOne(req.body);
+      res.status(201).send({ message: "User Added Successfully" });
 
-    users.push(req.body);
-
-    res.status(201).send({ message: "Added Successfully" });
+    }
+    else{
+      res.status(500).send({
+        message : `${req.body.email} already Exits`
+      });
+    }
+    
   } catch (error) {
     res.status(500).send(error);
   }
+  finally {
+    client.close()
+  }
 };
+
+
 
 
 // User Edit
-const userEdit = (req, res) => {
+const userEdit = async (req, res) => {
+  await client.connect();
   try {
-    let { id } = req.params;
-    let index = findIndex(users, id);
-
-    if (index !== -1) {
-      req.body.id = Number(id);
-      users.splice(index, 1, req.body);
+    const db = await client.db(dbName)
+    const user = await  db.collection('user').findOne({_id:new mongodb.ObjectId(req.params.id) });
+    if(user){
+      const edit = await  db.collection('user').updateOne({_id:new mongodb.ObjectId(req.params.id) }, {$set:req.body});
       res.status(200).send({ message: "Edited Successfully" });
-    } else {
-      res.status(400).send({
-        message: "Invalid User ID",
-      });
+
     }
+    else{
+      res.status(400).send({
+        message : "Invalid Id "
+      })
+    }
+   
   } catch (error) {
     res.status(500).send(error);
   }
+
 };
+
+
 
 
 // User Delete
-const userDelete = (req, res) => {
+const userDelete = async (req, res) => {
+  await client.connect();
   try {
-    let { id } = req.params;
-
-    let index = findIndex(users, id);
-
-    if (index !== -1) {
-      users.splice(index, 1);
+    const db = await client.db(dbName)
+    const user = await  db.collection('user').findOne({_id:new mongodb.ObjectId(req.params.id) });
+    if(user){
+      const del = await  db.collection('user').deleteOne({_id:new mongodb.ObjectId(req.params.id) });
       res.status(200).send({ message: "Deleted Successfully" });
-    } else {
-      res.status(400).send({
-        message: "Invalid User ID",
-      });
+
     }
+    else{
+      res.status(400).send({
+        message : "Invalid Id "
+      })
+    }
+   
+   
   } catch (error) {
     res.status(500).send(error);
   }
+  finally {
+    client.close()
+  }
 };
+
 
 
 
