@@ -22,6 +22,7 @@ const user = async (req, res) => {
   }
 };
 
+
 // Get User by Id
 const userId = async (req, res) => {
   await client.connect();
@@ -39,6 +40,8 @@ const userId = async (req, res) => {
     client.close();
   }
 };
+
+
 
 // User Create
 const userAdd = async (req, res) => {
@@ -60,6 +63,8 @@ const userAdd = async (req, res) => {
     client.close();
   }
 };
+
+
 
 // User Edit
 const userEdit = async (req, res) => {
@@ -87,6 +92,9 @@ const userEdit = async (req, res) => {
   }
 };
 
+
+
+
 // User Delete
 const userDelete = async (req, res) => {
   await client.connect();
@@ -111,5 +119,8 @@ const userDelete = async (req, res) => {
     client.close();
   }
 };
+
+
+
 
 export default { user, userId, userAdd, userDelete, userEdit };

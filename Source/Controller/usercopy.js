@@ -4,6 +4,7 @@ const users = [
   {
     id: 1,
     name: "Dharanish",
+    
     email: "dharanishsk9698@gmail.com",
     mobile: 6382617437,
     status: 1,
@@ -32,7 +33,7 @@ const userId = (req, res) => {
   try {
     let { id } = req.params;
     let index = findIndex(users, id);
-    if (index !== -1) {
+    if (index !== -1) { 
       res.status(200).send({ message: "Successfully", user: users[index] });
     } else {
       res.status(400).send({
@@ -51,8 +52,7 @@ const userAdd = (req, res) => {
     console.log(req.body);
     let id = users.length ? users[users.length - 1].id + 1 : 1;
     req.body.id = id;
-
-    users.push(req.body);
+     users.push(req.body);
 
     res.status(201).send({ message: "Added Successfully" });
   } catch (error) {
