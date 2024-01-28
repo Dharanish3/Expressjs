@@ -16,7 +16,7 @@ const user = async (req, res) => {
     const user = await db.collection("user").find().toArray();
     res.status(200).send(user);
   } catch (error) {
-    res.status(500).send(error);
+    res.status(500).send(error);  
   } finally {
     client.close();
   }
@@ -48,6 +48,7 @@ const userAdd = async (req, res) => {
   await client.connect();
   try {
     const db = await client.db(dbName);
+    
     const user = await db.collection("user").findOne({ email: req.body.email });
     if (!user) {
       const create = await db.collection("user").insertOne(req.body);
